@@ -25,6 +25,9 @@ export default function DashboardPage() {
   const [statusFilter, setStatusFilter] =
     useState("");
 
+  const [searchTerm, setSearchTerm] =
+    useState("");
+
   const validStatuses = [
     "pending",
     "approved",
@@ -146,6 +149,19 @@ export default function DashboardPage() {
     loadDashboard();
   }, []);
 
+  const filteredApplications =
+    applications.filter(
+      (application) =>
+        application.name
+          .toLowerCase()
+          .includes(
+            searchTerm.toLowerCase()
+          ) ||
+        application.mobile.includes(
+          searchTerm
+        )
+    );
+
   return (
     <>
       <Navbar />
@@ -179,64 +195,91 @@ export default function DashboardPage() {
             <StatsBar summary={summary} />
 
             <div className="mt-8">
-              <div className="mb-4 flex items-center justify-between">
+              <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <h2 className="text-xl font-semibold">
                   Applications
                 </h2>
 
-                <select
-                  value={statusFilter}
-                  onChange={async (e) => {
-                    const value =
-                      e.target.value;
+                <div className="flex flex-col gap-3 md:flex-row">
+                  <input
+                    type="text"
+                    placeholder="Search by applicant name or mobile..."
+                    value={searchTerm}
+                    onChange={(e) =>
+                      setSearchTerm(
+                        e.target.value
+                      )
+                    }
+                    className="w-full rounded-lg border p-2 md:w-72"
+                  />
 
-                    setStatusFilter(
-                      value
-                    );
+                  <select
+                    value={statusFilter}
+                    onChange={async (e) => {
+                      const value =
+                        e.target.value;
 
-                    await fetchApplications(
-                      value
-                    );
-                  }}
-                  className="rounded-lg border p-2"
-                >
-                  <option value="">
-                    All Applications
-                  </option>
+                      setStatusFilter(
+                        value
+                      );
 
-                  <option value="pending">
-                    Pending
-                  </option>
+                      await fetchApplications(
+                        value
+                      );
+                    }}
+                    className="rounded-lg border p-2"
+                  >
+                    <option value="">
+                      All Applications
+                    </option>
 
-                  <option value="approved">
-                    Approved
-                  </option>
+                    <option value="pending">
+                      Pending
+                    </option>
 
-                  <option value="rejected">
-                    Rejected
-                  </option>
-                </select>
+                    <option value="approved">
+                      Approved
+                    </option>
+
+                    <option value="rejected">
+                      Rejected
+                    </option>
+                  </select>
+                </div>
               </div>
 
-              {applications.length ===
+              {filteredApplications.length >
+                0 && (
+                <p className="mb-3 text-sm text-gray-500">
+                  Showing{" "}
+                  {
+                    filteredApplications.length
+                  }{" "}
+                  application
+                  {filteredApplications.length !==
+                  1
+                    ? "s"
+                    : ""}
+                </p>
+              )}
+
+              {filteredApplications.length ===
               0 ? (
                 <div className="rounded-xl border bg-white p-8 text-center">
                   <h3 className="text-lg font-medium">
                     No applications found
-
-                    Try changing the filter or create a new application.
                   </h3>
 
                   <p className="mt-2 text-gray-500">
-                    No applications
-                    match the selected
-                    filter.
+                    {searchTerm
+                      ? `No applications found matching "${searchTerm}".`
+                      : "No applications match the selected filter."}
                   </p>
                 </div>
               ) : (
                 <ApplicationsTable
                   applications={
-                    applications
+                    filteredApplications
                   }
                   onStatusChange={
                     updateStatus

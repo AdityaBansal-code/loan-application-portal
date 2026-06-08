@@ -1,5 +1,6 @@
 import type { Application } from "../types/application";
 import StatusBadge from "./StatusBadge";
+import LanguageBadge from "./LanguageBadge";
 
 interface Props {
   applications: Application[];
@@ -67,8 +68,10 @@ export default function ApplicationsTable({
                 </td>
 
                 <td className="p-3">
-                  {application.language}
-                </td>
+  <LanguageBadge
+    language={application.language}
+  />
+</td>
 
                 <td className="p-3">
                   <StatusBadge
