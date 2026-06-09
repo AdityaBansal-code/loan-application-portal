@@ -33,7 +33,7 @@ export const validateApplication = (
   });
 }
 
-  if (amount <= 0) {
+  if (!amount || amount <= 0) {
     return res.status(400).json({
       error: "Loan amount must be greater than 0",
     });

@@ -4,8 +4,24 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString:
+    process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,
   },
 });
+
+pool
+  .query("SELECT NOW()")
+  .then((res) => {
+    console.log(
+      "✅ Database Connected"
+    );
+    console.log(res.rows[0]);
+  })
+  .catch((err) => {
+    console.error(
+      "❌ Database Connection Failed"
+    );
+    console.error(err);
+  });
